@@ -1,3 +1,6 @@
+![CI](../../actions/workflows/ci.yml/badge.svg)
+![Bench](../../actions/workflows/bench.yml/badge.svg)
+
 # VIREON × TRP Reaction–Diffusion GroundTruth Engine
 
 This repo is a *falsification-first* evaluation engine for reaction–diffusion (RD) models.
