@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vireon-rd-groundtruth"
+version = "0.1.0"
+description = "VIREON × TRP Reaction–Diffusion GroundTruth Engine"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+authors = [{name = "The Architects"}]
+dependencies = ["numpy>=1.24", "matplotlib>=3.7"]
+
+[project.scripts]
+vireon-rd = "vireon_rd.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+addopts = "-q"
+testpaths = ["tests"]
