@@ -28,7 +28,10 @@ def build_parser() -> argparse.ArgumentParser:
     runp.add_argument("--seed", type=int, default=1)
     runp.add_argument("--out", default="results/run", help="output directory")
 
-    suite = sub.add_parser("suite", help="run multiple seeds and compute ΔE_store over suite")
+    suite = sub.add_parser(
+        "suite",
+        help="run multiple seeds and compute ΔE_store over suite",
+    )
     suite.add_argument("--spec", default="sqk", choices=["sqk", "gs"])
     suite.add_argument("--seeds", default="1,2,3,4,5", help="comma-separated seeds")
     suite.add_argument("--out", default="results/suite", help="output directory")
@@ -82,6 +85,10 @@ def run_one(spec_name: str, seed: int, out_dir: Path) -> None:
             "grid": asdict_safe(spec.grid),
             "dt": float(sim.dt),
             "T": float(sim.T),
+            # surface numerical health at the meta layer (used by reports + audits)
+            "status": getattr(sim, "status", "ok"),
+            "stop_step": getattr(sim, "stop_step", None),
+            "stop_time": getattr(sim, "stop_time", None),
         },
     )
 
