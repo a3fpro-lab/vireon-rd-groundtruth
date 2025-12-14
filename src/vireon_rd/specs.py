@@ -1,14 +1,14 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 
 @dataclass(frozen=True)
 class GridSpec:
-    N: int = 128          # grid size (NxN)
-    L: float = 40.0       # domain length (units)
-    dt: float = 0.01      # timestep
-    T: float = 60.0       # final time
+    N: int = 128  # grid size (NxN)
+    L: float = 40.0  # domain length (units)
+    dt: float = 0.01  # timestep
+    T: float = 60.0  # final time
     save_every: int = 10  # save stride (steps)
 
 
@@ -24,21 +24,24 @@ class ForcingSpec:
 @dataclass(frozen=True)
 class SQKModelGSpec:
     """
-    A practical, testable 3-field forced RD system inspired by SQK Model-G "potential-form" motifs:
-      - three fields: G, X, Y
-      - quadratic coupling: Q = (X + c1)^2 * (Y + c2)
-      - optional localized forcing χ into X (organizer-like source)
-    This is engineered as an evaluation testbed (not a physics endorsement).
+    Practical 3-field forced RD testbed inspired by SQK Model-G "potential-form" motifs.
+
+    - fields: G, X, Y
+    - quadratic coupling: Q = (X + c1)^2 * (Y + c2)
+    - localized forcing χ into X (organizer-like source)
+
+    Engine note: this is engineered for evaluation + falsification, not physics endorsement.
     """
-    grid: GridSpec = GridSpec()
-    forcing: ForcingSpec = ForcingSpec()
+
+    grid: GridSpec = field(default_factory=GridSpec)
+    forcing: ForcingSpec = field(default_factory=ForcingSpec)
 
     # diffusion (asymmetric)
     Dg: float = 0.05
     Dx: float = 0.20
     Dy: float = 0.60
 
-    # "potential shift" constants (keep explicit; tuneable)
+    # "potential shift" constants (explicit; tuneable)
     c1: float = 140.0 / 9.0
     c2: float = 40.0 / 3.0
 
@@ -63,10 +66,12 @@ class SQKModelGSpec:
 class GrayScottSpec:
     """
     Standard Gray–Scott baseline (2-field RD):
+
       u_t = Du ∆u - u v^2 + F(1-u)
       v_t = Dv ∆v + u v^2 - (F+k)v
     """
-    grid: GridSpec = GridSpec()
+
+    grid: GridSpec = field(default_factory=GridSpec)
 
     Du: float = 0.16
     Dv: float = 0.08
