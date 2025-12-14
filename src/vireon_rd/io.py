@@ -26,7 +26,10 @@ def ensure_dir(p: Path) -> Path:
 
 def write_json(path: Path, obj: Any) -> None:
     ensure_dir(path.parent)
-    path.write_text(json.dumps(obj, indent=2, default=_json_default) + "\n", encoding="utf-8")
+    path.write_text(
+        json.dumps(obj, indent=2, default=_json_default) + "\n",
+        encoding="utf-8",
+    )
 
 
 def run_meta(
@@ -56,6 +59,20 @@ def write_report_md(
     lines: list[str] = []
     lines.append(f"# Report: {meta.get('spec')} seed={meta.get('seed')}")
     lines.append("")
+
+    # Quick status header (so blowups are obvious in plain text)
+    status = meta.get("status", "ok")
+    if status != "ok":
+        stop_step = meta.get("stop_step")
+        stop_time = meta.get("stop_time")
+        lines.append("## Status")
+        lines.append(f"- **status**: `{status}`")
+        if stop_step is not None:
+            lines.append(f"- **stop_step**: `{stop_step}`")
+        if stop_time is not None:
+            lines.append(f"- **stop_time**: `{stop_time}`")
+        lines.append("")
+
     lines.append("## Meta")
     lines.append("```json")
     lines.append(json.dumps(meta, indent=2, default=_json_default))
