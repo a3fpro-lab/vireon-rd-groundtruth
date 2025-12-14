@@ -53,11 +53,19 @@ def falsify_one(
     E_current = (T + trp_cfg.eps) / max(R * P, 1e-12)
 
     gates: dict[str, bool] = {}
-    gates["TRPGate"] = TRP >= cfg.min_trp
-    gates["LocalizationGate"] = loc >= cfg.min_localization
+    gates["TRPGate"] = cfg.min_trp <= TRP
+    gates["LocalizationGate"] = cfg.min_localization <= loc
     gates["DriftGate"] = kl <= cfg.max_kl_drift
-    gates["LambdaFiniteGate"] = (np.isfinite(lam) and lam > 0.0) if cfg.require_finite_lambda else True
-    gates["NonBlankGate"] = (label != "blank") if cfg.forbid_blank else True
+
+    if cfg.require_finite_lambda:
+        gates["LambdaFiniteGate"] = bool(np.isfinite(lam) and lam > 0.0)
+    else:
+        gates["LambdaFiniteGate"] = True
+
+    if cfg.forbid_blank:
+        gates["NonBlankGate"] = label != "blank"
+    else:
+        gates["NonBlankGate"] = True
 
     extras = {"R": float(R), "P": float(P), "TRP": float(TRP), "E_current": float(E_current)}
     return gates, extras
