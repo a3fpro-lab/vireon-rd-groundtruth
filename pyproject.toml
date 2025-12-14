@@ -24,3 +24,8 @@ where = ["src"]
 [tool.pytest.ini_options]
 addopts = "-q"
 testpaths = ["tests"]
+
+[project.scripts]
+vireon-rd = "vireon_rd.engine:main"
+
+
