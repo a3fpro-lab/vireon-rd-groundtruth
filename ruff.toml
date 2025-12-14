@@ -2,9 +2,10 @@ line-length = 100
 target-version = "py311"
 
 [lint]
-select = ["E", "F", "I", "UP", "B", "SIM"]
-ignore = ["E203"]
+select = ["E", "F", "I", "UP", "SIM"]
+ignore = []
+fixable = ["ALL"]
 
-[format]
-quote-style = "double"
-indent-style = "space"
+[lint.isort]
+known-first-party = ["vireon_rd"]
+combine-as-imports = true
