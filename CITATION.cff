@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it."
+title: "VIREON × TRP Reaction–Diffusion GroundTruth Engine"
+version: 0.1.0
+license: MIT
+authors:
+  - name: "Inkwon Song Jr."
+abstract: "Falsification-first evaluation engine for reaction–diffusion models with TRP scoring, suite-level ΔE_store, and reproducible benchmark artifacts."
+keywords:
+  - "reaction-diffusion"
+  - "turing patterns"
+  - "reproducibility"
+  - "falsification"
+  - "spectral analysis"
+  - "TRP"
+  - "VIREON"
+repository-code: "https://github.com/<YOUR_ORG>/<YOUR_REPO>"
