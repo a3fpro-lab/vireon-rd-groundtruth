@@ -19,7 +19,7 @@ def kl_divergence(p: np.ndarray, q: np.ndarray, eps: float = 1e-12) -> float:
     q = np.maximum(q, 0.0)
     sp = float(p.sum())
     sq = float(q.sum())
-    if sp <= eps or sq <= eps:
+    if eps >= sp or eps >= sq:
         return 0.0
     p = p / sp
     q = q / sq
@@ -91,7 +91,7 @@ def anisotropy_index(S: np.ndarray, eps: float = 1e-12) -> float:
     y, x = np.indices((ny, nx))
     w = np.maximum(S, 0.0)
     Z = float(w.sum())
-    if Z <= eps:
+    if eps >= Z:
         return 0.0
     dx = x - cx
     dy = y - cy
@@ -109,7 +109,7 @@ def localization_index(u: np.ndarray, q: float = 0.95, eps: float = 1e-12) -> fl
     x = np.asarray(u, dtype=float)
     e = x * x
     total = float(e.sum())
-    if total <= eps:
+    if eps >= total:
         return 0.0
     flat = np.sort(e.ravel())
     k = int(max(1, round((1.0 - q) * flat.size)))
