@@ -1,11 +1,46 @@
 # VIREON × TRP Reaction–Diffusion GroundTruth Engine
 
-We will build this repo **iPhone-proof**: add package + tests first, then add CI last.
+This is a **simulation + evaluation + falsification** engine for reaction–diffusion systems.
 
-## Core contracts
-- TRP = (R×P)/(T+ε)
-- E_current = (T+ε)/(R×P) = 1/TRP
-- ΔE_store = E_current − E_global_min ≥ 0 (suite)
+The point is not “pretty patterns.” The point is **certified behavior**:
+- reproducible across seeds
+- stable under numerical refinement
+- separable from baselines
+- gated by explicit falsifiers
 
-## Status
-Skeleton first (to guarantee CI green). Heavy engine next.
+---
+
+## Core contracts (math)
+
+- TRP:
+  \[
+  \mathrm{TRP}=\frac{R\,P}{T+\varepsilon}
+  \]
+- Energy proxy:
+  \[
+  E_{\text{current}}=\frac{T+\varepsilon}{RP}=1/\mathrm{TRP}
+  \]
+- Suite slack:
+  \[
+  \Delta E_{\text{store}}=E_{\text{current}}-E_{\text{global\_min}}\ge 0
+  \]
+- KL:
+  \[
+  D_{\mathrm{KL}}(p\|q)=\sum_i p_i\log\frac{p_i}{q_i}
+  \]
+
+---
+
+## What this repo certifies (and does NOT certify)
+
+**Certifies**: whether an RD model’s observed pattern class is **robust** under perturbations and **passes gates**.
+
+**Does not certify**: any fundamental-physics claim from pattern appearance alone.
+
+---
+
+## Commands
+
+Skeleton smoke:
+```bash
+python -m vireon_rd smoke
