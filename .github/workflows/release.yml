@@ -1,0 +1,45 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  release-artifacts:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+          python -m pip install -e .
+
+      - name: Run benchmark
+        run: |
+          python scripts/run_bench.py --out results --seeds "1,2,3,4,5"
+
+      - name: Generate figures
+        run: |
+          python scripts/make_figures.py --spec sqk --seed 1 --figdir results/figures
+          python scripts/make_figures.py --spec gs --seed 1 --figdir results/figures
+
+      - name: Zip results
+        run: |
+          python - <<'PY'
+          import shutil
+          shutil.make_archive("vireon-rd-results", "zip", "results")
+          PY
+
+      - name: Upload release asset
+        uses: softprops/action-gh-release@v2
+        with:
+          files: vireon-rd-results.zip
