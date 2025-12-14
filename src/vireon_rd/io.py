@@ -4,7 +4,7 @@ import json
 import platform
 import sys
 from dataclasses import asdict
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -29,12 +29,17 @@ def write_json(path: Path, obj: Any) -> None:
     path.write_text(json.dumps(obj, indent=2, default=_json_default) + "\n", encoding="utf-8")
 
 
-def run_meta(engine_version: str, spec_name: str, seed: int, extra: dict[str, Any]) -> dict[str, Any]:
+def run_meta(
+    engine_version: str,
+    spec_name: str,
+    seed: int,
+    extra: dict[str, Any],
+) -> dict[str, Any]:
     meta = {
         "engine_version": engine_version,
         "spec": spec_name,
         "seed": int(seed),
-        "utc": datetime.now(timezone.utc).isoformat(),
+        "utc": datetime.now(UTC).isoformat(),
         "python": sys.version,
         "platform": platform.platform(),
     }
@@ -42,7 +47,12 @@ def run_meta(engine_version: str, spec_name: str, seed: int, extra: dict[str, An
     return meta
 
 
-def write_report_md(path: Path, meta: dict[str, Any], metrics: dict[str, Any], gates: dict[str, bool]) -> None:
+def write_report_md(
+    path: Path,
+    meta: dict[str, Any],
+    metrics: dict[str, Any],
+    gates: dict[str, bool],
+) -> None:
     lines: list[str] = []
     lines.append(f"# Report: {meta.get('spec')} seed={meta.get('seed')}")
     lines.append("")
