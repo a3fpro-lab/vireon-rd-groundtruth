@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Dict, Optional
 
 
 @dataclass(frozen=True)
@@ -19,17 +18,17 @@ def trp_score(R: float, P: float, T: float, cfg: TRPConfig) -> float:
     r = max(float(R), cfg.result_floor)
     p = max(float(P), cfg.product_floor)
     t = max(float(T), 0.0)
-    return (r * p) / ((t ** cfg.time_power) + cfg.eps)
+    return (r * p) / ((t**cfg.time_power) + cfg.eps)
 
 
 def trp_rotate(
     TRP: float,
     *,
-    R: Optional[float] = None,
-    P: Optional[float] = None,
-    T: Optional[float] = None,
+    R: float | None = None,
+    P: float | None = None,
+    T: float | None = None,
     eps: float = 1e-9,
-) -> Dict[str, float]:
+) -> dict[str, float]:
     """
     “Rotation” identities (algebraic solves) when 2 of {R,P,T} are known.
 
@@ -38,11 +37,10 @@ def trp_rotate(
       => P = TRP*(T+eps)/R
       => T = (R*P)/TRP - eps
     """
-    out: Dict[str, float] = {"TRP": float(TRP)}
+    out: dict[str, float] = {"TRP": float(TRP)}
 
     known = {"R": R is not None, "P": P is not None, "T": T is not None}
     if sum(known.values()) < 2:
-        # not enough info to solve
         if R is not None:
             out["R"] = float(R)
         if P is not None:
