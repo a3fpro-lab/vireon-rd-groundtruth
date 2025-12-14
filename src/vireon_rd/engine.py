@@ -122,7 +122,7 @@ def main(argv=None) -> None:
     args = build_parser().parse_args(argv)
 
     if args.cmd == "smoke":
-        print("OK: vireon-rd engine CLI is live.")
+        print("OK: skeleton is live. OK: vireon-rd engine CLI is live.")
         return
 
     if args.cmd == "run":
