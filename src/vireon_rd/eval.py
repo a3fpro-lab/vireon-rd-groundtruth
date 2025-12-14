@@ -14,7 +14,6 @@ from .metrics import (
     structure_factor_2d,
 )
 
-
 Label = Literal["spots", "stripes", "radial", "blank", "unknown"]
 
 
@@ -70,19 +69,15 @@ def eval_field(u: np.ndarray, cfg: EvalConfig) -> dict[str, float]:
     }
 
 
-def eval_time_drift(
-    fields_over_time: list[np.ndarray],
-    cfg: EvalConfig,
-) -> dict[str, float]:
+def eval_time_drift(fields_over_time: list[np.ndarray]) -> dict[str, float]:
     """
-    Compute spectral drift over time using KL divergence between
+    Spectral drift over time using KL divergence between
     the last snapshot spectrum and earlier spectra (averaged).
     """
     if len(fields_over_time) < 2:
         return {"kl_mean_to_final": 0.0}
 
     S_final = structure_factor_2d(fields_over_time[-1])
-    # normalize to distribution
     Sf = np.maximum(S_final, 0.0)
     Sf = Sf / max(float(Sf.sum()), 1e-12)
 
@@ -92,4 +87,5 @@ def eval_time_drift(
         S = np.maximum(S, 0.0)
         S = S / max(float(S.sum()), 1e-12)
         kls.append(kl_divergence(S, Sf))
+
     return {"kl_mean_to_final": float(np.mean(kls)) if kls else 0.0}
