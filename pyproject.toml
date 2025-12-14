@@ -8,15 +8,15 @@ version = "0.1.0"
 description = "VIREON × TRP Reaction–Diffusion GroundTruth Engine"
 readme = "README.md"
 requires-python = ">=3.11"
-license = {text = "MIT"}
-authors = [{name = "The Architects"}]
+license = { text = "MIT" }
+authors = [{ name = "The Architects" }]
 dependencies = ["numpy>=1.24", "matplotlib>=3.7"]
 
 [project.scripts]
-vireon-rd = "vireon_rd.cli:main"
+vireon-rd = "vireon_rd.engine:main"
 
 [tool.setuptools]
-package-dir = {"" = "src"}
+package-dir = { "" = "src" }
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -24,8 +24,3 @@ where = ["src"]
 [tool.pytest.ini_options]
 addopts = "-q"
 testpaths = ["tests"]
-
-[project.scripts]
-vireon-rd = "vireon_rd.engine:main"
-
-
