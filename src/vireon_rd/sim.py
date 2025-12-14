@@ -17,12 +17,21 @@ class SimResult:
     times: list[float] = field(default_factory=list)
     snapshots: list[dict[str, np.ndarray]] = field(default_factory=list)
     final: dict[str, np.ndarray] = field(default_factory=dict)
+    status: str = "ok"  # "ok" | "blowup"
+    stop_step: int | None = None
+    stop_time: float | None = None
+
+
+def _finite_all(arrs: list[np.ndarray]) -> bool:
+    return all(bool(np.isfinite(a).all()) for a in arrs)
 
 
 def run_sqk_model_g(spec: SQKModelGSpec, seed: int) -> SimResult:
     """
     Explicit-Euler integrator for the 3-field forced RD testbed.
     Periodic BC, 5-point Laplacian.
+
+    Engine rule: if the system diverges (nan/inf), stop cleanly and mark status="blowup".
     """
     N = spec.grid.N
     L = spec.grid.L
@@ -43,19 +52,14 @@ def run_sqk_model_g(spec: SQKModelGSpec, seed: int) -> SimResult:
 
         if n % save_every == 0:
             out.times.append(float(t))
-            out.snapshots.append(
-                {
-                    "G": G.copy(),
-                    "X": X.copy(),
-                    "Y": Y.copy(),
-                }
-            )
+            out.snapshots.append({"G": G.copy(), "X": X.copy(), "Y": Y.copy()})
 
         # build forcing χ (only into X channel by design)
         chi = forcing_field(N, L, t, spec.forcing) if spec.enable_forcing else zero
 
-        # quadratic coupling
-        Q = (X + spec.c1) ** 2 * (Y + spec.c2)
+        # quadratic coupling (may be stiff)
+        with np.errstate(over="ignore", invalid="ignore"):
+            Q = (X + spec.c1) ** 2 * (Y + spec.c2)
 
         # diffusion
         LG = laplacian_periodic(G, dx)
@@ -72,6 +76,14 @@ def run_sqk_model_g(spec: SQKModelGSpec, seed: int) -> SimResult:
         X = X + dt * dX
         Y = Y + dt * dY
 
+        # blow-up detection: stop early, label the run, return cleanly
+        if not _finite_all([G, X, Y]):
+            out.status = "blowup"
+            out.stop_step = int(n)
+            out.stop_time = float(t)
+            out.final = {"G": G, "X": X, "Y": Y}
+            return out
+
     out.final = {"G": G, "X": X, "Y": Y}
     return out
 
@@ -79,6 +91,8 @@ def run_sqk_model_g(spec: SQKModelGSpec, seed: int) -> SimResult:
 def run_grayscott(spec: GrayScottSpec, seed: int) -> SimResult:
     """
     Explicit-Euler Gray–Scott baseline.
+
+    Engine rule: if the system diverges (nan/inf), stop cleanly and mark status="blowup".
     """
     N = spec.grid.N
     L = spec.grid.L
@@ -102,12 +116,21 @@ def run_grayscott(spec: GrayScottSpec, seed: int) -> SimResult:
         Lu = laplacian_periodic(u, dx)
         Lv = laplacian_periodic(v, dx)
 
-        uv2 = u * v * v
+        with np.errstate(over="ignore", invalid="ignore"):
+            uv2 = u * v * v
+
         du = spec.Du * Lu - uv2 + spec.F * (1.0 - u)
         dv = spec.Dv * Lv + uv2 - (spec.F + spec.k) * v
 
         u = u + dt * du
         v = v + dt * dv
+
+        if not _finite_all([u, v]):
+            out.status = "blowup"
+            out.stop_step = int(n)
+            out.stop_time = float(t)
+            out.final = {"u": u, "v": v}
+            return out
 
     out.final = {"u": u, "v": v}
     return out
