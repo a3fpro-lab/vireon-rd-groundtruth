@@ -3,9 +3,9 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from vireon_rd import specs as specs_mod
 from vireon_rd.engine import run_one
 from vireon_rd.specs import ForcingSpec, GridSpec, SQKModelGSpec
-from vireon_rd import specs as specs_mod
 
 
 def test_engine_run_writes_artifacts(tmp_path: Path, monkeypatch) -> None:
