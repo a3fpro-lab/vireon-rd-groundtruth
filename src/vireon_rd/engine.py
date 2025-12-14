@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 from pathlib import Path
 
 import numpy as np
@@ -16,7 +17,10 @@ ENGINE_VERSION = "0.1.0"
 
 
 def build_parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(prog="vireon-rd", description="VIREON × TRP RD GroundTruth Engine")
+    p = argparse.ArgumentParser(
+        prog="vireon-rd",
+        description="VIREON × TRP RD GroundTruth Engine",
+    )
     sub = p.add_subparsers(dest="cmd", required=True)
 
     runp = sub.add_parser("run", help="run one model + evaluate + falsify")
@@ -30,7 +34,6 @@ def build_parser() -> argparse.ArgumentParser:
     suite.add_argument("--out", default="results/suite", help="output directory")
 
     sub.add_parser("smoke", help="minimal smoke command")
-
     return p
 
 
@@ -74,7 +77,12 @@ def run_one(spec_name: str, seed: int, out_dir: Path) -> None:
         engine_version=ENGINE_VERSION,
         spec_name=spec_name,
         seed=seed,
-        extra={"model": model, "grid": asdict_safe(spec.grid), "dt": float(sim.dt), "T": float(sim.T)},
+        extra={
+            "model": model,
+            "grid": asdict_safe(spec.grid),
+            "dt": float(sim.dt),
+            "T": float(sim.T),
+        },
     )
 
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -87,22 +95,26 @@ def run_one(spec_name: str, seed: int, out_dir: Path) -> None:
 def run_suite(spec_name: str, seeds: list[int], out_dir: Path) -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
     E_list: list[float] = []
+    runs: list[dict[str, float]] = []
 
-    runs: list[dict[str, object]] = []
     for s in seeds:
         run_dir = out_dir / f"seed_{s}"
         run_one(spec_name, s, run_dir)
-        metrics = (run_dir / "metrics.json").read_text(encoding="utf-8")
-        # small hack: parse for E_current without pulling a JSON parser into tiny core
-        # (io.py already imports json, so we can use it here safely)
-        import json  # noqa: PLC0415
 
-        mj = json.loads(metrics)
-        E_list.append(float(mj.get("E_current", 0.0)))
-        runs.append({"seed": s, "E_current": float(mj.get("E_current", 0.0)), "TRP": float(mj.get("TRP", 0.0))})
+        mj = json.loads((run_dir / "metrics.json").read_text(encoding="utf-8"))
+        e = float(mj.get("E_current", 0.0))
+        trp = float(mj.get("TRP", 0.0))
+        E_list.append(e)
+        runs.append({"seed": float(s), "E_current": e, "TRP": trp})
 
     E_min, dE_mean = suite_delta_e_store(E_list)
-    suite_summary = {"spec": spec_name, "seeds": seeds, "E_global_min": E_min, "dE_store_mean": dE_mean, "runs": runs}
+    suite_summary = {
+        "spec": spec_name,
+        "seeds": seeds,
+        "E_global_min": E_min,
+        "dE_store_mean": dE_mean,
+        "runs": runs,
+    }
     write_json(out_dir / "suite.json", suite_summary)
 
 
