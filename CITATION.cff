@@ -2,7 +2,7 @@ cff-version: 1.2.0
 message: "If you use this engine, please cite it as below."
 title: "VIREON × TRP Reaction–Diffusion GroundTruth Engine"
 type: software
-author:
+authors:
   - name: "Inkwon Song Jr."
 repository-code: "https://github.com/a3fpro-lab/vireon-rd-groundtruth"
 keywords:
