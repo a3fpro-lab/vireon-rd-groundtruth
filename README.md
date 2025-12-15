@@ -7,7 +7,7 @@
 
 This repo is a **falsification-first** evaluation engine for reaction–diffusion (RD) models.
 
-It is not “a cool sim.” It is a reproducible harness that:
+It is a reproducible harness that:
 - runs RD systems (currently **SQK-like 3-field** + **Gray–Scott baseline**),
 - extracts objective pattern statistics (spectral peak, anisotropy, localization),
 - measures stability/drift (KL divergence of spectra over time),
