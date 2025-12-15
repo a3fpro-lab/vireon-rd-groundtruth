@@ -5,6 +5,8 @@
 
 # VIREON × TRP Reaction–Diffusion GroundTruth Engine
 
+**Proof bundle:** generate `results/EVIDENCE_PACK.md` locally, or run the **Bench** workflow to download it in the `vireon-rd-results` artifact.
+
 This repo is a **falsification-first** evaluation engine for reaction–diffusion (RD) models.
 
 It is a reproducible harness that:
