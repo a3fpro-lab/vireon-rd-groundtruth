@@ -113,6 +113,28 @@ CI tests enforce:
 
 ⸻
 
+## Public claim boundary (anti-strawman)
+
+This repository makes **engineering claims**, not metaphysical ones.
+
+### What we claim
+- This engine provides a **reproducible**, **falsification-first** harness for RD models.
+- It outputs objective, comparable metrics and gates across seeds/suites.
+- It surfaces numerical instability explicitly (`status/stop_*`), preventing silent artifact claims.
+- It supports model comparison via TRP + suite-level ΔE_store.
+
+### What we do NOT claim
+- We do **not** claim SQK (or any RD system here) is validated as fundamental physics.
+- We do **not** claim particles, gravity, or cosmology are “explained” by these PDEs.
+- The only “wins” recognized here are **robustness + metrics + reproducibility** improvements.
+
+### What counts as progress (this repo’s definition)
+A model improves if it:
+- passes falsifier gates across suites,
+- keeps metrics stable under perturbations (seed/resolution/forcing),
+- improves TRP and reduces ΔE_store_mean vs baselines (or widens separation cleanly),
+- produces evidence pack outputs that remain consistent across machines/CI runs.
+
 Output layout
 
 Single run directory:
