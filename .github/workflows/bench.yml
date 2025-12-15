@@ -30,6 +30,10 @@ jobs:
         run: |
           python scripts/run_bench.py --out results --seeds "${{ inputs.seeds }}"
 
+      - name: Evidence Pack
+        run: |
+          python scripts/evidence_pack.py --root results --sqk sqk_suite --gs gs_suite --out results/EVIDENCE_PACK.md
+
       - name: Upload results artifact
         uses: actions/upload-artifact@v4
         with:
